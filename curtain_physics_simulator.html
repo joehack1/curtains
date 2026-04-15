@@ -1,0 +1,342 @@
+
+<div style="display:flex;gap:0;height:600px;background:var(--color-background-primary)">
+<div style="flex:1;position:relative;overflow:hidden;background:#1a1a2e" id="canvas-wrap">
+<canvas id="curtainCanvas" style="display:block;width:100%;height:100%"></canvas>
+</div>
+<div style="width:240px;padding:16px;overflow-y:auto;border-left:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);display:flex;flex-direction:column;gap:14px">
+<div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">Curtain controls</div>
+
+<div>
+<label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between"><span>Gravity</span><span id="gravVal">0.5</span></label>
+<input type="range" id="gravity" min="0" max="2" step="0.05" value="0.5" style="width:100%">
+</div>
+<div>
+<label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between"><span>Wind</span><span id="windVal">0.0</span></label>
+<input type="range" id="wind" min="-3" max="3" step="0.1" value="0" style="width:100%">
+</div>
+<div>
+<label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between"><span>Stiffness</span><span id="stiffVal">0.95</span></label>
+<input type="range" id="stiffness" min="0.5" max="0.999" step="0.001" value="0.95" style="width:100%">
+</div>
+<div>
+<label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between"><span>Damping</span><span id="dampVal">0.98</span></label>
+<input type="range" id="damping" min="0.8" max="0.999" step="0.001" value="0.98" style="width:100%">
+</div>
+<div>
+<label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between"><span>Turbulence</span><span id="turbVal">0.3</span></label>
+<input type="range" id="turbulence" min="0" max="2" step="0.05" value="0.3" style="width:100%">
+</div>
+<div>
+<label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between"><span>Segments</span><span id="segVal">20</span></label>
+<input type="range" id="segments" min="8" max="40" step="1" value="20" style="width:100%">
+</div>
+
+<div style="border-top:0.5px solid var(--color-border-tertiary);padding-top:12px">
+<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">Material preset</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" id="presets">
+<button onclick="applyPreset('silk')" style="font-size:11px;padding:6px 4px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);cursor:pointer">Silk</button>
+<button onclick="applyPreset('linen')" style="font-size:11px;padding:6px 4px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);cursor:pointer">Linen</button>
+<button onclick="applyPreset('velvet')" style="font-size:11px;padding:6px 4px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);cursor:pointer">Velvet</button>
+<button onclick="applyPreset('sheer')" style="font-size:11px;padding:6px 4px;border-radius:6px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);cursor:pointer">Sheer</button>
+</div>
+</div>
+
+<div style="border-top:0.5px solid var(--color-border-tertiary);padding-top:12px">
+<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">Colour</div>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px" id="colorSwatches">
+</div>
+<input type="color" id="customColor" value="#c0616b" style="width:100%;height:32px;border-radius:6px;border:0.5px solid var(--color-border-secondary);cursor:pointer;padding:2px">
+</div>
+
+<div style="border-top:0.5px solid var(--color-border-tertiary);padding-top:12px">
+<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">Shine / opacity</div>
+<div>
+<label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between"><span>Shine</span><span id="shineVal">0.5</span></label>
+<input type="range" id="shine" min="0" max="1" step="0.01" value="0.5" style="width:100%">
+</div>
+<div>
+<label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between"><span>Opacity</span><span id="opacityVal">1.0</span></label>
+<input type="range" id="opacity" min="0.1" max="1" step="0.01" value="1" style="width:100%">
+</div>
+</div>
+
+<div style="border-top:0.5px solid var(--color-border-tertiary);padding-top:12px">
+<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">Folds</div>
+<div>
+<label style="font-size:12px;color:var(--color-text-secondary);display:flex;justify-content:space-between"><span>Fold count</span><span id="foldVal">5</span></label>
+<input type="range" id="folds" min="2" max="12" step="1" value="5" style="width:100%">
+</div>
+</div>
+
+<button onclick="resetCurtain()" style="width:100%;padding:8px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-primary);cursor:pointer;font-size:13px">Reset curtain</button>
+</div>
+</div>
+
+<script>
+const canvas = document.getElementById('curtainCanvas');
+const ctx = canvas.getContext('2d');
+const wrap = document.getElementById('canvas-wrap');
+
+let W, H;
+function resize(){
+  W = wrap.clientWidth;
+  H = wrap.clientHeight;
+  canvas.width = W;
+  canvas.height = H;
+  initCurtain();
+}
+
+let params = {
+  gravity: 0.5,
+  wind: 0,
+  stiffness: 0.95,
+  damping: 0.98,
+  turbulence: 0.3,
+  segments: 20,
+  color: '#c0616b',
+  shine: 0.5,
+  opacity: 1,
+  folds: 5
+};
+
+let points = [], constraints = [];
+let time = 0;
+
+function initCurtain(){
+  points = [];
+  constraints = [];
+  const cols = params.segments;
+  const rows = Math.floor(params.segments * 1.6);
+  const sw = W * 0.7;
+  const sh = H * 0.82;
+  const ox = W * 0.15;
+  const oy = H * 0.06;
+  const restX = sw / (cols - 1);
+  const restY = sh / (rows - 1);
+
+  for(let r = 0; r < rows; r++){
+    for(let c = 0; c < cols; c++){
+      const foldOffset = Math.sin(c / (cols-1) * Math.PI * 2 * params.folds) * 12;
+      points.push({
+        x: ox + c * restX + foldOffset,
+        y: oy + r * restY,
+        px: ox + c * restX + foldOffset,
+        py: oy + r * restY,
+        pinned: r === 0,
+        restX: ox + c * restX,
+        restY: oy + r * restY
+      });
+    }
+  }
+
+  for(let r = 0; r < rows; r++){
+    for(let c = 0; c < cols; c++){
+      const i = r * cols + c;
+      if(c < cols-1) constraints.push({a:i, b:i+1, len:restX});
+      if(r < rows-1) constraints.push({a:i, b:i+cols, len:restY});
+      if(r < rows-1 && c < cols-1){
+        const diagLen = Math.sqrt(restX*restX + restY*restY);
+        constraints.push({a:i, b:i+cols+1, len:diagLen*1.05});
+        constraints.push({a:i+1, b:i+cols, len:diagLen*1.05});
+      }
+    }
+  }
+}
+
+function step(){
+  time += 0.016;
+  const cols = params.segments;
+  const rows = Math.floor(params.segments * 1.6);
+
+  for(let i = 0; i < points.length; i++){
+    const p = points[i];
+    if(p.pinned) continue;
+    const vx = (p.x - p.px) * params.damping;
+    const vy = (p.y - p.py) * params.damping;
+    const turbX = (Math.sin(time * 1.3 + i * 0.31) * 0.5 + Math.sin(time * 2.7 + i * 0.17) * 0.5) * params.turbulence;
+    const turbY = (Math.cos(time * 1.1 + i * 0.23) * 0.3) * params.turbulence * 0.3;
+    p.px = p.x;
+    p.py = p.y;
+    p.x += vx + params.wind * 0.1 + turbX;
+    p.y += vy + params.gravity * 0.4 + turbY;
+  }
+
+  const iters = 8;
+  for(let iter = 0; iter < iters; iter++){
+    for(let ci = 0; ci < constraints.length; ci++){
+      const c = constraints[ci];
+      const a = points[c.a], b = points[c.b];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const dist = Math.sqrt(dx*dx + dy*dy) || 0.001;
+      const diff = (dist - c.len * params.stiffness) / dist * 0.5;
+      const mx = dx * diff, my = dy * diff;
+      if(!a.pinned){ a.x += mx; a.y += my; }
+      if(!b.pinned){ b.x -= mx; b.y -= my; }
+    }
+  }
+}
+
+function hexToRgb(hex){
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return [r,g,b];
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--color-background-tertiary') || '#1a1a2e';
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(0,0,W,H);
+
+  drawRod();
+
+  const cols = params.segments;
+  const rows = Math.floor(params.segments * 1.6);
+  const [r,g,b] = hexToRgb(params.color);
+  const baseAlpha = params.opacity;
+
+  for(let row = 0; row < rows - 1; row++){
+    for(let col = 0; col < cols - 1; col++){
+      const i00 = row * cols + col;
+      const i10 = row * cols + col + 1;
+      const i01 = (row+1) * cols + col;
+      const i11 = (row+1) * cols + col + 1;
+      const p00 = points[i00], p10 = points[i10], p01 = points[i01], p11 = points[i11];
+
+      const cx = (p00.x + p10.x + p01.x + p11.x) / 4;
+      const cy = (p00.y + p10.y + p01.y + p11.y) / 4;
+      const nx = -(p11.y - p00.y);
+      const ny = p11.x - p00.x;
+      const len = Math.sqrt(nx*nx + ny*ny) || 1;
+      const lightX = -0.5, lightY = -0.7;
+      const dot = (nx/len)*lightX + (ny/len)*lightY;
+      const shade = Math.max(0, Math.min(1, dot * 0.5 + 0.5));
+      const specular = params.shine * Math.pow(Math.max(0, dot), 8);
+
+      const fr = Math.min(255, Math.floor(r * shade + 255 * specular));
+      const fg = Math.min(255, Math.floor(g * shade + 255 * specular));
+      const fb = Math.min(255, Math.floor(b * shade + 255 * specular));
+
+      ctx.globalAlpha = baseAlpha;
+      ctx.fillStyle = `rgb(${fr},${fg},${fb})`;
+      ctx.beginPath();
+      ctx.moveTo(p00.x, p00.y);
+      ctx.lineTo(p10.x, p10.y);
+      ctx.lineTo(p11.x, p11.y);
+      ctx.lineTo(p01.x, p01.y);
+      ctx.closePath();
+      ctx.fill();
+
+      if(params.shine > 0.2){
+        ctx.globalAlpha = baseAlpha * params.shine * 0.18;
+        ctx.strokeStyle = `rgb(255,255,255)`;
+        ctx.lineWidth = 0.3;
+        ctx.stroke();
+      }
+    }
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawRod(){
+  const ox = W * 0.12;
+  const ex = W * 0.88;
+  const oy = H * 0.05;
+  ctx.save();
+  const g = ctx.createLinearGradient(ox, oy-6, ox, oy+6);
+  g.addColorStop(0, '#d0c9b8');
+  g.addColorStop(0.4, '#f0ebe0');
+  g.addColorStop(1, '#9a9080');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.roundRect(ox, oy-5, ex-ox, 10, 5);
+  ctx.fill();
+  ctx.fillStyle = '#c0b8a0';
+  for(let x = ox+20; x < ex; x += 40){
+    ctx.beginPath();
+    ctx.arc(x, oy, 7, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#8a8070';
+    ctx.beginPath();
+    ctx.arc(x, oy, 4, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = '#c0b8a0';
+  }
+  ctx.restore();
+}
+
+function loop(){
+  step();
+  step();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+const colors = ['#c0616b','#7b9ec8','#6ab89a','#c8a45a','#9b75c4','#e8c4b0','#5a8a7a','#c87890'];
+function buildSwatches(){
+  const sw = document.getElementById('colorSwatches');
+  sw.innerHTML = '';
+  colors.forEach(c => {
+    const d = document.createElement('div');
+    d.style.cssText = `width:100%;aspect-ratio:1;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;transition:transform 0.1s`;
+    d.onclick = () => {
+      params.color = c;
+      document.getElementById('customColor').value = c;
+    };
+    d.onmouseenter = () => d.style.transform = 'scale(1.15)';
+    d.onmouseleave = () => d.style.transform = '';
+    sw.appendChild(d);
+  });
+}
+
+function bind(id, key, decimals){
+  const el = document.getElementById(id);
+  const lbl = document.getElementById(id + (key === 'segments' || key === 'folds' ? 'Val' : 'Val'));
+  el.addEventListener('input', () => {
+    params[key] = parseFloat(el.value);
+    document.getElementById(id+'Val').textContent = parseFloat(el.value).toFixed(decimals);
+    if(key === 'segments' || key === 'folds') initCurtain();
+  });
+}
+
+bind('gravity','gravity',2);
+bind('wind','wind',1);
+bind('stiffness','stiffness',3);
+bind('damping','damping',3);
+bind('turbulence','turbulence',1);
+bind('segments','segments',0);
+bind('shine','shine',2);
+bind('opacity','opacity',2);
+bind('folds','folds',0);
+
+document.getElementById('customColor').addEventListener('input', e => { params.color = e.target.value; });
+
+function applyPreset(name){
+  const presets = {
+    silk: {stiffness:0.99,damping:0.995,turbulence:0.15,shine:0.85,opacity:0.93},
+    linen: {stiffness:0.93,damping:0.97,turbulence:0.5,shine:0.15,opacity:1},
+    velvet: {stiffness:0.96,damping:0.985,turbulence:0.25,shine:0.05,opacity:1},
+    sheer: {stiffness:0.98,damping:0.992,turbulence:0.4,shine:0.6,opacity:0.35}
+  };
+  const p = presets[name];
+  Object.assign(params, p);
+  document.getElementById('stiffness').value = p.stiffness;
+  document.getElementById('stiffVal').textContent = p.stiffness.toFixed(3);
+  document.getElementById('damping').value = p.damping;
+  document.getElementById('dampVal').textContent = p.damping.toFixed(3);
+  document.getElementById('turbulence').value = p.turbulence;
+  document.getElementById('turbVal').textContent = p.turbulence.toFixed(1);
+  document.getElementById('shine').value = p.shine;
+  document.getElementById('shineVal').textContent = p.shine.toFixed(2);
+  document.getElementById('opacity').value = p.opacity;
+  document.getElementById('opacityVal').textContent = p.opacity.toFixed(2);
+}
+
+function resetCurtain(){ initCurtain(); }
+
+window.addEventListener('resize', resize);
+buildSwatches();
+resize();
+loop();
+</script>
